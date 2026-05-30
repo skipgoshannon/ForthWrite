@@ -120,25 +120,25 @@ def format_bold(self):
         selected = cursor.selectedText()
         cursor.insertText(f"**{selected}**")
 
-    def format_italic(self):
+def format_italic(self):
         # Wrap the selected text in markdown italic markers
         cursor = self.editor.textCursor()
         selected = cursor.selectedText()
         cursor.insertText(f"*{selected}*")
 
-    def format_h1(self):
+def format_h1(self):
         # Add a markdown H1 marker at the start of the current line
         cursor = self.editor.textCursor()
         cursor.movePosition(cursor.MoveOperation.StartOfLine)
         cursor.insertText("# ")
 
-    def format_h2(self):
+def format_h2(self):
         # Add a markdown H2 marker at the start of the current line
         cursor = self.editor.textCursor()
         cursor.movePosition(cursor.MoveOperation.StartOfLine)
         cursor.insertText("## ")
 
-    def format_bullet(self):
+def format_bullet(self):
         # Add a bullet point marker at the start of the current line
         cursor = self.editor.textCursor()
         cursor.movePosition(cursor.MoveOperation.StartOfLine)
@@ -162,7 +162,7 @@ def save_file(self):
             # Update the filename bar to show the saved filename
             self.toolbar.filename_input.setText(path.split("/")[-1].upper())
 
-    def new_document(self):
+def new_document(self):
         # Ask the user to confirm before clearing the editor
         reply = QMessageBox.question(
             self, "New Document",
@@ -176,7 +176,7 @@ def save_file(self):
             self.toolbar.filename_input.setText("UNTITLED.TXT")
             self.elapsed_seconds = 0
 
-    def exit_app(self):
+def exit_app(self):
         # Ask the user to confirm before closing the application
         reply = QMessageBox.question(
             self, "Exit ForthWrite",
