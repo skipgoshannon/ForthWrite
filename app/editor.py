@@ -15,8 +15,11 @@ class Editor(QPlainTextEdit):
         # Apply the green-on-black terminal stylesheet
         self.setStyleSheet(EDITOR_STYLE)
 
+        # Track current font size so we can increase and decrease it
+        self.current_font_size = FONT_SIZE_LARGE
+
         # Load the VT323 retro font at the correct size
-        font = QFont(FONT_FAMILY, FONT_SIZE_LARGE)
+        font = QFont(FONT_FAMILY, self.current_font_size)
         self.setFont(font)
 
         # Disable the spell checker — we don't want red squiggles in a retro editor
@@ -25,8 +28,8 @@ class Editor(QPlainTextEdit):
         # Show placeholder text when the editor is empty
         self.setPlaceholderText("START TYPING...")
 
-        # Disable line wrap so long lines scroll horizontally like an old terminal
-        self.setLineWrapMode(QPlainTextEdit.LineWrapMode.NoWrap)
+        # Wrap lines at the widget boundary so text doesn't scroll off screen
+        self.setLineWrapMode(QPlainTextEdit.LineWrapMode.WidgetWidth)
 
 
 def paintEvent(self, event):
@@ -43,5 +46,4 @@ def paintEvent(self, event):
             painter.drawLine(0, y, self.width(), y)
 
         painter.end()
-
 

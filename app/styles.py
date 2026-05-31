@@ -124,6 +124,24 @@ STATUS_STYLE = f"""
     }}
 """
 
+# Pause button style
+PAUSE_BTN_STYLE = f"""
+    QPushButton {{
+        color: {PRIMARY_GREEN};
+        background-color: {DARK_GREEN};
+        font-family: {FONT_FAMILY};
+        font-size: {FONT_SIZE_MEDIUM}px;
+        border: 2px solid {PRIMARY_GREEN};
+        padding: 2px 6px;
+        letter-spacing: 1px;
+    }}
+    QPushButton:hover {{
+        background-color: {PRIMARY_GREEN};
+        color: {BLACK};
+    }}
+"""
+
+
 # Help bar style
 HELP_STYLE = f"""
     QWidget#help_bar {{

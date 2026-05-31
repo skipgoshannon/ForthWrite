@@ -1,10 +1,10 @@
 from PyQt6.QtWidgets import QMainWindow, QWidget, QVBoxLayout, QFileDialog, QMessageBox
 from PyQt6.QtCore import QTimer, Qt
-from PyQt6.QtGui import QKeySequence, QShortcut
+from PyQt6.QtGui import QKeySequence, QShortcut, QFont
 from app.toolbar import Toolbar
 from app.editor import Editor
 from app.statusbar import StatusBar
-from app.styles import WINDOW_STYLE, TERMINAL_STYLE
+from app.styles import WINDOW_STYLE, TERMINAL_STYLE, FONT_FAMILY
 
 
 class MainWindow(QMainWindow):
@@ -27,8 +27,7 @@ class MainWindow(QMainWindow):
         self._setup_shortcuts()
         self._setup_timers()
 
-
-def _build_ui(self):
+    def _build_ui(self):
         # Create the central widget that holds everything
         central = QWidget()
         central.setObjectName("central")
@@ -40,9 +39,9 @@ def _build_ui(self):
         self.terminal.setStyleSheet(TERMINAL_STYLE)
 
         # Create the three main sections of the app
-        self.toolbar    = Toolbar()
-        self.editor     = Editor()
-        self.statusbar  = StatusBar()
+        self.toolbar   = Toolbar()
+        self.editor    = Editor()
+        self.statusbar = StatusBar()
 
         # Connect the format buttons in the toolbar to the editor
         self.toolbar.bold_btn.clicked.connect(self.format_bold)
@@ -66,8 +65,7 @@ def _build_ui(self):
         central_layout = QVBoxLayout(central)
         central_layout.addWidget(self.terminal)
 
-
-def _setup_shortcuts(self):
+    def _setup_shortcuts(self):
         # Ctrl+S — save the current document
         QShortcut(QKeySequence("Ctrl+S"), self).activated.connect(self.save_file)
 
@@ -80,72 +78,87 @@ def _setup_shortcuts(self):
         # Ctrl+M — toggle the format menu in the toolbar
         QShortcut(QKeySequence("Ctrl+M"), self).activated.connect(self.toolbar.toggle_format_menu)
 
-        # Ctrl+Shift+N — start a new document
-        QShortcut(QKeySequence("Ctrl+Shift+N"), self).activated.connect(self.new_document)
+        # Ctrl+N — start a new document
+        QShortcut(QKeySequence("Ctrl+N"), self).activated.connect(self.new_document)
 
         # Ctrl+E — exit the application
         QShortcut(QKeySequence("Ctrl+E"), self).activated.connect(self.exit_app)
 
+        # Ctrl+F — toggle fullscreen mode
+        QShortcut(QKeySequence("Ctrl+F"), self).activated.connect(self.toggle_fullscreen)
 
-def _setup_timers(self):
+
+    def _setup_timers(self):
         # Timer to update the clock in the toolbar every second
         self.clock_timer = QTimer()
         self.clock_timer.timeout.connect(self.toolbar.update_date)
-        self.clock_timer.start(1000)  # Fire every 1000 milliseconds (1 second)
+        self.clock_timer.start(1000)
 
         # Timer to update the session elapsed time every second
         self.session_timer = QTimer()
         self.session_timer.timeout.connect(self.tick_session)
         self.session_timer.start(1000)
 
+        # Connect the pause button to the toggle method
+        self.statusbar.pause_btn.clicked.connect(self.toggle_timer)
+
+        # Connect the font size buttons to their methods
+        self.statusbar.font_up_btn.clicked.connect(self.increase_font)
+        self.statusbar.font_down_btn.clicked.connect(self.decrease_font)
+
         # Update the clock immediately so it shows on launch
         self.toolbar.update_date()
 
+    def toggle_timer(self):
+        # Pause or resume the session timer and update the button label
+        if self.session_timer.isActive():
+            self.session_timer.stop()
+            self.statusbar.pause_btn.setText("RESUME")
+        else:
+            self.session_timer.start(1000)
+            self.statusbar.pause_btn.setText("PAUSE")
 
-def tick_session(self):
+    def tick_session(self):
         # Increment the elapsed time by one second and update the status bar
         self.elapsed_seconds += 1
         self.statusbar.update_timer(self.elapsed_seconds)
 
-
-def on_text_changed(self):
+    def on_text_changed(self):
         # Get the current text from the editor and update the status bar stats
         text = self.editor.toPlainText()
         self.statusbar.update_stats(text)
 
-
-def format_bold(self):
+    def format_bold(self):
         # Wrap the selected text in markdown bold markers
         cursor = self.editor.textCursor()
         selected = cursor.selectedText()
         cursor.insertText(f"**{selected}**")
 
-def format_italic(self):
+    def format_italic(self):
         # Wrap the selected text in markdown italic markers
         cursor = self.editor.textCursor()
         selected = cursor.selectedText()
         cursor.insertText(f"*{selected}*")
 
-def format_h1(self):
+    def format_h1(self):
         # Add a markdown H1 marker at the start of the current line
         cursor = self.editor.textCursor()
         cursor.movePosition(cursor.MoveOperation.StartOfLine)
         cursor.insertText("# ")
 
-def format_h2(self):
+    def format_h2(self):
         # Add a markdown H2 marker at the start of the current line
         cursor = self.editor.textCursor()
         cursor.movePosition(cursor.MoveOperation.StartOfLine)
         cursor.insertText("## ")
 
-def format_bullet(self):
+    def format_bullet(self):
         # Add a bullet point marker at the start of the current line
         cursor = self.editor.textCursor()
         cursor.movePosition(cursor.MoveOperation.StartOfLine)
         cursor.insertText("• ")
 
-
-def save_file(self):
+    def save_file(self):
         # Get the filename from the toolbar input
         filename = self.toolbar.filename_input.text()
 
@@ -162,7 +175,7 @@ def save_file(self):
             # Update the filename bar to show the saved filename
             self.toolbar.filename_input.setText(path.split("/")[-1].upper())
 
-def new_document(self):
+    def new_document(self):
         # Ask the user to confirm before clearing the editor
         reply = QMessageBox.question(
             self, "New Document",
@@ -176,7 +189,7 @@ def new_document(self):
             self.toolbar.filename_input.setText("UNTITLED.TXT")
             self.elapsed_seconds = 0
 
-def exit_app(self):
+    def exit_app(self):
         # Ask the user to confirm before closing the application
         reply = QMessageBox.question(
             self, "Exit ForthWrite",
@@ -187,4 +200,23 @@ def exit_app(self):
         if reply == QMessageBox.StandardButton.Yes:
             self.close()
 
+    def toggle_fullscreen(self):
+        # Switch between fullscreen and normal window mode
+        if self.isFullScreen():
+            self.showNormal()
+        else:
+            self.showFullScreen()
 
+    def increase_font(self):
+        # Increase font size by 1 point, capped at 48pt
+        if self.editor.current_font_size < 48:
+            self.editor.current_font_size += 1
+            font = QFont(FONT_FAMILY, self.editor.current_font_size)
+            self.editor.document().setDefaultFont(font)
+
+    def decrease_font(self):
+        # Decrease font size by 1 point, capped at 8pt
+        if self.editor.current_font_size > 8:
+            self.editor.current_font_size -= 1
+            font = QFont(FONT_FAMILY, self.editor.current_font_size)
+            self.editor.document().setDefaultFont(font)

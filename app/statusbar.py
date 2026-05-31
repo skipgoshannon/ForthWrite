@@ -1,6 +1,7 @@
-from PyQt6.QtWidgets import QWidget, QHBoxLayout, QLabel, QVBoxLayout
+from PyQt6.QtWidgets import QWidget, QHBoxLayout, QLabel, QVBoxLayout, QPushButton
 from PyQt6.QtCore import Qt
-from app.styles import STATUS_STYLE, HELP_STYLE
+from app.styles import STATUS_STYLE, HELP_STYLE, PAUSE_BTN_STYLE
+
 
 class StatusBar(QWidget):
 
@@ -11,8 +12,7 @@ class StatusBar(QWidget):
         self._build_help_bar()    # Keyboard shortcut hints
         self._setup_layout()      # Stack them vertically
 
-
-def _build_status_bar(self):
+    def _build_status_bar(self):
         # Container widget for the stats row
         self.status_bar = QWidget()
         self.status_bar.setObjectName("status_bar")
@@ -30,16 +30,34 @@ def _build_status_bar(self):
         self.time_label = QLabel("TIME: 00:00:00")
         self.time_label.setObjectName("status_label")
 
-        # Arrange labels horizontally with the timer pushed to the right
+        # Button to pause and resume the session timer
+        self.pause_btn = QPushButton("PAUSE")
+        self.pause_btn.setStyleSheet(PAUSE_BTN_STYLE)
+
+        # Button to increase font size
+        self.font_up_btn = QPushButton("A+")
+        self.font_up_btn.setStyleSheet(PAUSE_BTN_STYLE)
+
+        # Button to decrease font size
+        self.font_down_btn = QPushButton("A-")
+        self.font_down_btn.setStyleSheet(PAUSE_BTN_STYLE)
+
+        # Arrange labels horizontally with the timer and pause button on the right
         layout = QHBoxLayout(self.status_bar)
         layout.addWidget(self.char_label)
         layout.addSpacing(20)
         layout.addWidget(self.word_label)
         layout.addStretch()
         layout.addWidget(self.time_label)
+        layout.addSpacing(10)
+        layout.addWidget(self.pause_btn)
+        layout.addWidget(self.font_down_btn)
+        layout.addSpacing(5)
+        layout.addWidget(self.font_up_btn)
+        layout.addSpacing(10)
+        layout.addWidget(self.pause_btn)
 
-
-def _build_help_bar(self):
+    def _build_help_bar(self):
         # Container widget for the keyboard shortcut hints
         self.help_bar = QWidget()
         self.help_bar.setObjectName("help_bar")
@@ -47,17 +65,17 @@ def _build_help_bar(self):
 
         # Single label showing all available keyboard shortcuts
         self.help_label = QLabel(
-            "CTRL+SHIFT+N=NEW  CTRL+S=SAVE  CTRL+B=BOLD  "
-            "CTRL+I=ITALIC  CTRL+M=MENU  CTRL+E=EXIT"
+            "CTRL+N=NEW  CTRL+S=SAVE  CTRL+M=MENU  "
+            "CTRL+E=EXIT  CTRL+F=FULLSCREEN"
         )
+
         self.help_label.setObjectName("help_label")
 
         # Center the help text horizontally
         layout = QHBoxLayout(self.help_bar)
         layout.addWidget(self.help_label, alignment=Qt.AlignmentFlag.AlignCenter)
 
-
-def _setup_layout(self):
+    def _setup_layout(self):
         # Stack the status bar and help bar vertically
         layout = QVBoxLayout(self)
         layout.setContentsMargins(0, 0, 0, 0)  # No padding around the status area
@@ -65,8 +83,7 @@ def _setup_layout(self):
         layout.addWidget(self.status_bar)
         layout.addWidget(self.help_bar)
 
-
-def update_stats(self, text):
+    def update_stats(self, text):
         # Count total characters in the editor
         char_count = len(text)
 
@@ -77,8 +94,7 @@ def update_stats(self, text):
         self.char_label.setText(f"CH: {char_count}")
         self.word_label.setText(f"WD: {word_count}")
 
-
-def update_timer(self, seconds):
+    def update_timer(self, seconds):
         # Convert total seconds into hours, minutes, and seconds
         hours   = seconds // 3600
         minutes = (seconds % 3600) // 60
@@ -88,5 +104,3 @@ def update_timer(self, seconds):
         self.time_label.setText(
             f"TIME: {hours:02d}:{minutes:02d}:{secs:02d}"
         )
-
-
