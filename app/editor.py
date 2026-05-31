@@ -1,7 +1,7 @@
 from PyQt6.QtWidgets import QPlainTextEdit
 from PyQt6.QtGui import QFont, QPainter, QColor
 from PyQt6.QtCore import Qt
-from app.styles import EDITOR_STYLE, FONT_FAMILY, FONT_SIZE_LARGE, TERMINAL_BG
+from app.styles import EDITOR_STYLE, FONT_FAMILY, FONT_SIZE_LARGE, TERMINAL_BG, EDITOR_MARGINS
 
 
 class Editor(QPlainTextEdit):
@@ -14,6 +14,9 @@ class Editor(QPlainTextEdit):
 
         # Apply the green-on-black terminal stylesheet
         self.setStyleSheet(EDITOR_STYLE)
+
+        # Apply margins to the viewport
+        self.setViewportMargins(*EDITOR_MARGINS)
 
         # Track current font size so we can increase and decrease it
         self.current_font_size = FONT_SIZE_LARGE

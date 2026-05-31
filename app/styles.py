@@ -32,6 +32,10 @@ TERMINAL_STYLE = f"""
     }}
 """
 
+# Editor viewport margins (left, top, right, bottom) in pixels
+EDITOR_MARGINS = (20, 20, 20, 20)
+
+
 # Header bar style
 HEADER_STYLE = f"""
     QWidget#header {{

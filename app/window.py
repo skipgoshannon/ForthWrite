@@ -88,6 +88,9 @@ class MainWindow(QMainWindow):
         # Ctrl+F — toggle fullscreen mode
         QShortcut(QKeySequence("Ctrl+F"), self).activated.connect(self.toggle_fullscreen)
 
+        # Ctrl+O — open an existing file
+        QShortcut(QKeySequence("Ctrl+O"), self).activated.connect(self.open_file)
+
 
     def _setup_timers(self):
         # Timer to update the clock in the toolbar every second
@@ -200,7 +203,7 @@ class MainWindow(QMainWindow):
 
         # Open a save dialog starting with the current filename
         path, _ = QFileDialog.getSaveFileName(
-            self, "Save File", filename, "Text Files (*.txt);;All Files (*)"
+            self, "Save File", filename, "Text Files (*.txt);;Markdown Files (*.md);;All Files (*)"
         )
 
         # If the user didn't cancel, write the editor contents to the file
@@ -210,6 +213,28 @@ class MainWindow(QMainWindow):
 
             # Update the filename bar to show the saved filename
             self.toolbar.filename_input.setText(path.split("/")[-1].upper())
+
+    def open_file(self):
+        # Open a file browser dialog to select a text file
+        path, _ = QFileDialog.getOpenFileName(
+            self, "Open File", "", "All Supported Files (*.txt *.TXT *.md *.MD);;Text Files (*.txt *.TXT);;Markdown Files (*.md *.MD);;All Files (*)"
+        )
+
+        # If the user selected a file, read it and load it into the editor
+        if path:
+            with open(path, "r") as f:
+                content = f.read()
+
+            # Load the file contents into the editor
+            self.editor.setPlainText(content)
+
+            # Update the filename bar to show the opened file's name
+            self.toolbar.filename_input.setText(path.split("/")[-1].upper())
+
+            # Reset the session timer for the new document
+            self.elapsed_seconds = 0
+
+
 
     def new_document(self):
         # Ask the user to confirm before clearing the editor

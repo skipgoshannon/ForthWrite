@@ -70,7 +70,7 @@ class StatusBar(QWidget):
 
         # Single label showing all available keyboard shortcuts
         self.help_label = QLabel(
-            "CTRL+N=NEW  CTRL+S=SAVE  CTRL+M=MENU  "
+            "CTRL+N=NEW  CTRL+O=OPEN  CTRL+S=SAVE  CTRL+M=MENU  "
             "CTRL+E=EXIT  CTRL+F=FULLSCREEN"
         )
 
