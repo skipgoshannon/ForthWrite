@@ -1,10 +1,11 @@
-from PyQt6.QtWidgets import QMainWindow, QWidget, QVBoxLayout, QFileDialog, QMessageBox
+from PyQt6.QtWidgets import QMainWindow, QWidget, QVBoxLayout, QFileDialog, QMessageBox, QMenu
 from PyQt6.QtCore import QTimer, Qt
 from PyQt6.QtGui import QKeySequence, QShortcut, QFont
 from app.toolbar import Toolbar
 from app.editor import Editor
 from app.statusbar import StatusBar
 from app.styles import WINDOW_STYLE, TERMINAL_STYLE, FONT_FAMILY
+from app.prompts import get_story_prompt, get_journal_prompt
 
 
 class MainWindow(QMainWindow):
@@ -106,6 +107,9 @@ class MainWindow(QMainWindow):
         self.statusbar.font_up_btn.clicked.connect(self.increase_font)
         self.statusbar.font_down_btn.clicked.connect(self.decrease_font)
 
+        # Connect the prompt button to the prompt menu
+        self.statusbar.prompt_btn.clicked.connect(self.show_prompt_menu)
+
         # Update the clock immediately so it shows on launch
         self.toolbar.update_date()
 
@@ -127,6 +131,38 @@ class MainWindow(QMainWindow):
         # Get the current text from the editor and update the status bar stats
         text = self.editor.toPlainText()
         self.statusbar.update_stats(text)
+
+    def show_prompt_menu(self):
+        # Create a dropdown menu with two categories
+        menu = QMenu(self)
+        menu.setStyleSheet(f"""
+            QMenu {{
+                background-color: #001100;
+                color: #00ff00;
+                border: 2px solid #00ff00;
+                font-family: VT323;
+                font-size: 18px;
+            }}
+            QMenu::item:selected {{
+                background-color: #00ff00;
+                color: #000000;
+            }}
+        """)
+
+        # Add the two category options
+        story_action   = menu.addAction("STORY")
+        journal_action = menu.addAction("JOURNAL")
+
+        # Show the menu just above the prompt button
+        action = menu.exec(self.statusbar.prompt_btn.mapToGlobal(
+            self.statusbar.prompt_btn.rect().topLeft()
+        ))
+
+        # Insert the selected prompt into the editor
+        if action == story_action:
+            self.editor.insertPlainText(get_story_prompt())
+        elif action == journal_action:
+            self.editor.insertPlainText(get_journal_prompt())
 
     def format_bold(self):
         # Wrap the selected text in markdown bold markers

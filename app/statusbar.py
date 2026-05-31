@@ -34,6 +34,10 @@ class StatusBar(QWidget):
         self.pause_btn = QPushButton("PAUSE")
         self.pause_btn.setStyleSheet(PAUSE_BTN_STYLE)
 
+        # Button to open the writing prompt menu
+        self.prompt_btn = QPushButton("PROMPT")
+        self.prompt_btn.setStyleSheet(PAUSE_BTN_STYLE)
+        
         # Button to increase font size
         self.font_up_btn = QPushButton("A+")
         self.font_up_btn.setStyleSheet(PAUSE_BTN_STYLE)
@@ -42,20 +46,21 @@ class StatusBar(QWidget):
         self.font_down_btn = QPushButton("A-")
         self.font_down_btn.setStyleSheet(PAUSE_BTN_STYLE)
 
-        # Arrange labels horizontally with the timer and pause button on the right
+        # Arrange labels and buttons horizontally
         layout = QHBoxLayout(self.status_bar)
         layout.addWidget(self.char_label)
         layout.addSpacing(20)
         layout.addWidget(self.word_label)
         layout.addStretch()
-        layout.addWidget(self.time_label)
+        layout.addWidget(self.prompt_btn)
         layout.addSpacing(10)
-        layout.addWidget(self.pause_btn)
         layout.addWidget(self.font_down_btn)
         layout.addSpacing(5)
         layout.addWidget(self.font_up_btn)
         layout.addSpacing(10)
         layout.addWidget(self.pause_btn)
+        layout.addSpacing(10)
+        layout.addWidget(self.time_label)
 
     def _build_help_bar(self):
         # Container widget for the keyboard shortcut hints
