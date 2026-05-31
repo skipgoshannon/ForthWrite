@@ -1,7 +1,7 @@
 from PyQt6.QtWidgets import QPlainTextEdit
 from PyQt6.QtGui import QFont, QPainter, QColor, QTextBlockFormat, QTextCursor
 from PyQt6.QtCore import Qt
-from app.styles import EDITOR_STYLE, FONT_FAMILY, FONT_SIZE_LARGE, TERMINAL_BG, EDITOR_MARGINS_NORMAL, EDITOR_LINE_SPACING
+from app.styles import EDITOR_STYLE, FONT_FAMILY, FONT_SIZE_LARGE, TERMINAL_BG, EDITOR_MARGINS_NORMAL, EDITOR_LINE_SPACING, SCROLLBAR_STYLE
 
 
 class Editor(QPlainTextEdit):
@@ -14,6 +14,9 @@ class Editor(QPlainTextEdit):
 
         # Apply the green-on-black terminal stylesheet
         self.setStyleSheet(EDITOR_STYLE)
+
+        # Apply the scrollbar style
+        self.verticalScrollBar().setStyleSheet(SCROLLBAR_STYLE)
 
         # Set margins so text is not flush against the edges
         self.setViewportMargins(*EDITOR_MARGINS_NORMAL)

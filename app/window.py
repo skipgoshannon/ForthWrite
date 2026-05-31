@@ -1,3 +1,4 @@
+import os
 from PyQt6.QtWidgets import QMainWindow, QWidget, QVBoxLayout, QFileDialog, QMessageBox, QMenu
 from PyQt6.QtCore import QTimer, Qt
 from PyQt6.QtGui import QKeySequence, QShortcut, QFont
@@ -6,6 +7,7 @@ from app.editor import Editor
 from app.statusbar import StatusBar
 from app.styles import WINDOW_STYLE, TERMINAL_STYLE, FONT_FAMILY, EDITOR_MARGINS_NORMAL, EDITOR_MARGINS_FULLSCREEN
 from app.prompts import get_story_prompt, get_journal_prompt
+from app.help import HelpDialog
 
 
 class MainWindow(QMainWindow):
@@ -23,10 +25,16 @@ class MainWindow(QMainWindow):
         # Track elapsed session time in seconds
         self.elapsed_seconds = 0
 
+        # Track the current file path, None means not yet saved
+        self.current_file_path = None
+
         # Build the UI and connect everything together
         self._build_ui()
         self._setup_shortcuts()
         self._setup_timers()
+
+        # Show help on first launch
+        self._check_first_launch()
 
     def _build_ui(self):
         # Create the central widget that holds everything
@@ -91,6 +99,32 @@ class MainWindow(QMainWindow):
         # Ctrl+O — open an existing file
         QShortcut(QKeySequence("Ctrl+O"), self).activated.connect(self.open_file)
 
+        # Ctrl+9 — increase font size
+        QShortcut(QKeySequence("Ctrl+9"), self).activated.connect(self.increase_font)
+
+        # Ctrl+0 — decrease font size
+        QShortcut(QKeySequence("Ctrl+0"), self).activated.connect(self.decrease_font)
+
+        # Ctrl+W — show story prompt
+        QShortcut(QKeySequence("Ctrl+W"), self).activated.connect(self.show_story_prompt)
+
+        # Ctrl+J — show journal prompt
+        QShortcut(QKeySequence("Ctrl+J"), self).activated.connect(self.show_journal_prompt)
+
+        # Ctrl+P — pause/unpause timer
+        QShortcut(QKeySequence("Ctrl+P"), self).activated.connect(self.toggle_timer)
+
+        # Ctrl+1 — H1 heading
+        QShortcut(QKeySequence("Ctrl+1"), self).activated.connect(self.format_h1)
+
+        # Ctrl+2 — H2 heading
+        QShortcut(QKeySequence("Ctrl+2"), self).activated.connect(self.format_h2)
+
+        # Ctrl+8 — bullet point
+        QShortcut(QKeySequence("Ctrl+8"), self).activated.connect(self.format_bullet)
+
+        # Ctrl+H — show help dialog
+        QShortcut(QKeySequence("Ctrl+H"), self).activated.connect(self.show_help)
 
     def _setup_timers(self):
         # Timer to update the clock in the toolbar every second
@@ -167,6 +201,14 @@ class MainWindow(QMainWindow):
         elif action == journal_action:
             self.editor.insertPlainText(get_journal_prompt())
 
+    def show_story_prompt(self):
+        # Insert a random story prompt directly into the editor
+        self.editor.insertPlainText(get_story_prompt())
+
+    def show_journal_prompt(self):
+        # Insert a random journal prompt directly into the editor
+        self.editor.insertPlainText(get_journal_prompt())
+
     def format_bold(self):
         # Wrap the selected text in markdown bold markers
         cursor = self.editor.textCursor()
@@ -198,10 +240,14 @@ class MainWindow(QMainWindow):
         cursor.insertText("• ")
 
     def save_file(self):
-        # Get the filename from the toolbar input
-        filename = self.toolbar.filename_input.text()
+        # If we already have a file path, save directly without prompting
+        if self.current_file_path:
+            with open(self.current_file_path, "w") as f:
+                f.write(self.editor.toPlainText())
+            return
 
-        # Open a save dialog starting with the current filename
+        # Otherwise prompt for a filename
+        filename = self.toolbar.filename_input.text()
         path, _ = QFileDialog.getSaveFileName(
             self, "Save File", filename, "Text Files (*.txt);;Markdown Files (*.md);;All Files (*)"
         )
@@ -210,8 +256,7 @@ class MainWindow(QMainWindow):
         if path:
             with open(path, "w") as f:
                 f.write(self.editor.toPlainText())
-
-            # Update the filename bar to show the saved filename
+            self.current_file_path = path
             self.toolbar.filename_input.setText(path.split("/")[-1].upper())
 
     def open_file(self):
@@ -231,10 +276,11 @@ class MainWindow(QMainWindow):
             # Update the filename bar to show the opened file's name
             self.toolbar.filename_input.setText(path.split("/")[-1].upper())
 
+            # Store the path so subsequent saves go to the same file
+            self.current_file_path = path
+
             # Reset the session timer for the new document
             self.elapsed_seconds = 0
-
-
 
     def new_document(self):
         # Ask the user to confirm before clearing the editor
@@ -249,6 +295,7 @@ class MainWindow(QMainWindow):
             self.editor.clear()
             self.toolbar.filename_input.setText("UNTITLED.TXT")
             self.elapsed_seconds = 0
+            self.current_file_path = None
 
     def exit_app(self):
         # Ask the user to confirm before closing the application
@@ -283,3 +330,17 @@ class MainWindow(QMainWindow):
             self.editor.current_font_size -= 1
             font = QFont(FONT_FAMILY, self.editor.current_font_size)
             self.editor.document().setDefaultFont(font)
+
+    def _check_first_launch(self):
+        # Check for a marker file in the user's home directory
+        marker = os.path.expanduser("~/.forthwrite_launched")
+        if not os.path.exists(marker):
+            # First launch — show help and create the marker file
+            self.show_help()
+            with open(marker, "w") as f:
+                f.write("launched")
+
+    def show_help(self):
+        # Open the help dialog
+        dialog = HelpDialog(self)
+        dialog.exec()

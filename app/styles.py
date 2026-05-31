@@ -34,7 +34,7 @@ TERMINAL_STYLE = f"""
 
 # Editor margins for normal and fullscreen modes
 EDITOR_MARGINS_NORMAL     = (20, 20, 20, 20)
-EDITOR_MARGINS_FULLSCREEN = (350, 40, 350, 40)
+EDITOR_MARGINS_FULLSCREEN = (250, 40, 250, 40)
 
 # Line spacing for the editor (as a proportion, 1.0 is normal, 1.5 is 50% more)
 EDITOR_LINE_SPACING = 2.0
@@ -119,6 +119,29 @@ EDITOR_STYLE = f"""
     }}
 """
 
+
+# Scrollbar style to match the terminal aesthetic
+SCROLLBAR_STYLE = f"""
+    QScrollBar:vertical {{
+        background-color: {TERMINAL_BG};
+        width: 12px;
+        border: 1px solid {PRIMARY_GREEN};
+    }}
+    QScrollBar::handle:vertical {{
+        background-color: {PRIMARY_GREEN};
+        min-height: 20px;
+    }}
+    QScrollBar::add-line:vertical,
+    QScrollBar::sub-line:vertical {{
+        height: 0px;
+    }}
+    QScrollBar::add-page:vertical,
+    QScrollBar::sub-page:vertical {{
+        background: none;
+    }}
+"""
+
+
 # Status bar style
 STATUS_STYLE = f"""
     QWidget#status_bar {{
@@ -146,6 +169,35 @@ PAUSE_BTN_STYLE = f"""
     QPushButton:hover {{
         background-color: {PRIMARY_GREEN};
         color: {BLACK};
+    }}
+"""
+
+
+# Help dialog style
+HELP_DIALOG_STYLE = f"""
+    QDialog {{
+        background-color: {TERMINAL_BG};
+        border: 4px solid {PRIMARY_GREEN};
+    }}
+    QPlainTextEdit {{
+        background-color: {TERMINAL_BG};
+        color: {PRIMARY_GREEN};
+        font-family: {FONT_FAMILY};
+        font-size: {FONT_SIZE_SMALL}px;
+        border: none;
+        padding: 10px;
+    }}
+    QPushButton {{
+        background-color: {PRIMARY_GREEN};
+        color: {BLACK};
+        font-family: {FONT_FAMILY};
+        font-size: {FONT_SIZE_SMALL}px;
+        border: 2px solid {PRIMARY_GREEN};
+        padding: 4px 12px;
+    }}
+    QPushButton:hover {{
+        background-color: {DARK_GREEN};
+        color: {PRIMARY_GREEN};
     }}
 """
 
