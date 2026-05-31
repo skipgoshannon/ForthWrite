@@ -32,8 +32,12 @@ TERMINAL_STYLE = f"""
     }}
 """
 
-# Editor viewport margins (left, top, right, bottom) in pixels
-EDITOR_MARGINS = (20, 20, 20, 20)
+# Editor margins for normal and fullscreen modes
+EDITOR_MARGINS_NORMAL     = (20, 20, 20, 20)
+EDITOR_MARGINS_FULLSCREEN = (350, 40, 350, 40)
+
+# Line spacing for the editor (as a proportion, 1.0 is normal, 1.5 is 50% more)
+EDITOR_LINE_SPACING = 2.0
 
 
 # Header bar style

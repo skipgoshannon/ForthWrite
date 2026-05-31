@@ -1,7 +1,7 @@
 from PyQt6.QtWidgets import QPlainTextEdit
-from PyQt6.QtGui import QFont, QPainter, QColor
+from PyQt6.QtGui import QFont, QPainter, QColor, QTextBlockFormat, QTextCursor
 from PyQt6.QtCore import Qt
-from app.styles import EDITOR_STYLE, FONT_FAMILY, FONT_SIZE_LARGE, TERMINAL_BG, EDITOR_MARGINS
+from app.styles import EDITOR_STYLE, FONT_FAMILY, FONT_SIZE_LARGE, TERMINAL_BG, EDITOR_MARGINS_NORMAL, EDITOR_LINE_SPACING
 
 
 class Editor(QPlainTextEdit):
@@ -15,8 +15,8 @@ class Editor(QPlainTextEdit):
         # Apply the green-on-black terminal stylesheet
         self.setStyleSheet(EDITOR_STYLE)
 
-        # Apply margins to the viewport
-        self.setViewportMargins(*EDITOR_MARGINS)
+        # Set margins so text is not flush against the edges
+        self.setViewportMargins(*EDITOR_MARGINS_NORMAL)
 
         # Track current font size so we can increase and decrease it
         self.current_font_size = FONT_SIZE_LARGE
@@ -25,17 +25,39 @@ class Editor(QPlainTextEdit):
         font = QFont(FONT_FAMILY, self.current_font_size)
         self.setFont(font)
 
-        # Disable the spell checker — we don't want red squiggles in a retro editor
-        self.setDocument(self.document())
-
         # Show placeholder text when the editor is empty
         self.setPlaceholderText("START TYPING...")
 
         # Wrap lines at the widget boundary so text doesn't scroll off screen
         self.setLineWrapMode(QPlainTextEdit.LineWrapMode.WidgetWidth)
 
+        # Apply line spacing to the document
+        self._apply_line_spacing()
 
-def paintEvent(self, event):
+        # Reapply line spacing whenever the document changes
+        self.document().contentsChanged.connect(self._apply_line_spacing)
+
+    def _apply_line_spacing(self):
+        # Temporarily disconnect to avoid recursive calls
+        try:
+            self.document().contentsChanged.disconnect(self._apply_line_spacing)
+        except TypeError:
+            pass
+
+        # Apply the block format with line spacing to all text
+        block_format = QTextBlockFormat()
+        block_format.setLineHeight(
+            EDITOR_LINE_SPACING * 100,
+            QTextBlockFormat.LineHeightTypes.ProportionalHeight.value
+        )
+        cursor = QTextCursor(self.document())
+        cursor.select(QTextCursor.SelectionType.Document)
+        cursor.mergeBlockFormat(block_format)
+
+        # Reconnect after applying
+        self.document().contentsChanged.connect(self._apply_line_spacing)
+
+    def paintEvent(self, event):
         # First let Qt draw the editor normally
         super().paintEvent(event)
 
@@ -49,4 +71,3 @@ def paintEvent(self, event):
             painter.drawLine(0, y, self.width(), y)
 
         painter.end()
-

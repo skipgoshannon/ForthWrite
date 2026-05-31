@@ -4,7 +4,7 @@ from PyQt6.QtGui import QKeySequence, QShortcut, QFont
 from app.toolbar import Toolbar
 from app.editor import Editor
 from app.statusbar import StatusBar
-from app.styles import WINDOW_STYLE, TERMINAL_STYLE, FONT_FAMILY
+from app.styles import WINDOW_STYLE, TERMINAL_STYLE, FONT_FAMILY, EDITOR_MARGINS_NORMAL, EDITOR_MARGINS_FULLSCREEN
 from app.prompts import get_story_prompt, get_journal_prompt
 
 
@@ -262,11 +262,13 @@ class MainWindow(QMainWindow):
             self.close()
 
     def toggle_fullscreen(self):
-        # Switch between fullscreen and normal window mode
+        # Switch between fullscreen and normal window mode and adjust margins
         if self.isFullScreen():
             self.showNormal()
+            self.editor.setViewportMargins(*EDITOR_MARGINS_NORMAL)
         else:
             self.showFullScreen()
+            self.editor.setViewportMargins(*EDITOR_MARGINS_FULLSCREEN)
 
     def increase_font(self):
         # Increase font size by 1 point, capped at 48pt
