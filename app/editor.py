@@ -1,8 +1,7 @@
 from PyQt6.QtWidgets import QPlainTextEdit
 from PyQt6.QtGui import QFont, QPainter, QColor, QTextBlockFormat, QTextCursor
 from PyQt6.QtCore import Qt
-from app.styles import EDITOR_STYLE, FONT_FAMILY, FONT_SIZE_LARGE, TERMINAL_BG, EDITOR_MARGINS_NORMAL, EDITOR_LINE_SPACING, SCROLLBAR_STYLE
-
+from app.styles import EDITOR_STYLE, FONT_FAMILY_EDITOR, FONT_SIZE_LARGE, TERMINAL_BG, EDITOR_MARGINS_NORMAL, EDITOR_LINE_SPACING, SCROLLBAR_STYLE
 
 class Editor(QPlainTextEdit):
 
@@ -25,7 +24,7 @@ class Editor(QPlainTextEdit):
         self.current_font_size = FONT_SIZE_LARGE
 
         # Load the VT323 retro font at the correct size
-        font = QFont(FONT_FAMILY, self.current_font_size)
+        font = QFont(FONT_FAMILY_EDITOR, self.current_font_size)
         self.setFont(font)
 
         # Show placeholder text when the editor is empty

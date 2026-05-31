@@ -1,15 +1,16 @@
 # Core colors
 BACKGROUND       = "#000000"
-TERMINAL_BG      = "#001100"
-PRIMARY_GREEN    = "#00ff00"
-DARK_GREEN       = "#003300"
+TERMINAL_BG      = "#262324"
+PRIMARY_GREEN    = "#8AD2FF"
+DARK_GREEN       = "#122952"
 GLOW_GREEN       = "rgba(0, 255, 0, 0.5)"
-DIM_GREEN        = "#006600"
-TEXT_COLOR       = "#00ff00"
+DIM_GREEN        = "#222E44"
+TEXT_COLOR       = "#9DD9FF"
 BLACK            = "#000000"
 
 # Font
-FONT_FAMILY      = "VT323"
+FONT_FAMILY        = "VT323"
+FONT_FAMILY_EDITOR = "WarGames Terminal DT"
 FONT_SIZE_LARGE  = 24
 FONT_SIZE_MEDIUM = 20
 FONT_SIZE_SMALL  = 18
@@ -212,5 +213,20 @@ HELP_STYLE = f"""
         color: {BLACK};
         font-family: {FONT_FAMILY};
         font-size: {FONT_SIZE_SMALL}px;
+    }}
+"""
+
+
+PROMPT_MENU_STYLE = f"""
+    QMenu {{
+        background-color: {TERMINAL_BG};
+        color: {PRIMARY_GREEN};
+        border: 2px solid {PRIMARY_GREEN};
+        font-family: {FONT_FAMILY};
+        font-size: {FONT_SIZE_MEDIUM}px;
+    }}
+    QMenu::item:selected {{
+        background-color: {PRIMARY_GREEN};
+        color: {BLACK};
     }}
 """

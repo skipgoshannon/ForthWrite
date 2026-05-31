@@ -5,7 +5,7 @@ from PyQt6.QtGui import QKeySequence, QShortcut, QFont
 from app.toolbar import Toolbar
 from app.editor import Editor
 from app.statusbar import StatusBar
-from app.styles import WINDOW_STYLE, TERMINAL_STYLE, FONT_FAMILY, EDITOR_MARGINS_NORMAL, EDITOR_MARGINS_FULLSCREEN
+from app.styles import WINDOW_STYLE, TERMINAL_STYLE, FONT_FAMILY, EDITOR_MARGINS_NORMAL, EDITOR_MARGINS_FULLSCREEN, PROMPT_MENU_STYLE
 from app.prompts import get_story_prompt, get_journal_prompt
 from app.help import HelpDialog
 
@@ -172,19 +172,8 @@ class MainWindow(QMainWindow):
     def show_prompt_menu(self):
         # Create a dropdown menu with two categories
         menu = QMenu(self)
-        menu.setStyleSheet(f"""
-            QMenu {{
-                background-color: #001100;
-                color: #00ff00;
-                border: 2px solid #00ff00;
-                font-family: VT323;
-                font-size: 18px;
-            }}
-            QMenu::item:selected {{
-                background-color: #00ff00;
-                color: #000000;
-            }}
-        """)
+        
+        menu.setStyleSheet(PROMPT_MENU_STYLE)
 
         # Add the two category options
         story_action   = menu.addAction("STORY")
@@ -237,7 +226,7 @@ class MainWindow(QMainWindow):
         # Add a bullet point marker at the start of the current line
         cursor = self.editor.textCursor()
         cursor.movePosition(cursor.MoveOperation.StartOfLine)
-        cursor.insertText("• ")
+        cursor.insertText("* ")
 
     def save_file(self):
         # If we already have a file path, save directly without prompting
@@ -344,3 +333,16 @@ class MainWindow(QMainWindow):
         # Open the help dialog
         dialog = HelpDialog(self)
         dialog.exec()
+
+    def closeEvent(self, event):
+        # Intercept the window close button and ask for confirmation
+        reply = QMessageBox.question(
+            self, "Exit ForthWrite",
+            "Exit ForthWrite? Unsaved changes will be lost.",
+            QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No
+        )
+
+        if reply == QMessageBox.StandardButton.Yes:
+            event.accept()
+        else:
+            event.ignore()
